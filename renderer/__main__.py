@@ -1,41 +1,37 @@
 from .svg import Svg
-from .mesh import Mesh
 import numpy as np
+import pyvista as pv
 
 
-def render(mesh: Mesh, svg: Svg):
-    for edge in mesh.edges:
-        a, b = mesh.points[list(edge)]
+def render(mesh: pv.DataSet):
+    bounds = mesh.bounds
+
+    mesh = mesh.translate((-bounds.x_min, -bounds.y_min, 0))
+
+    width = mesh.bounds.x_max
+    height = mesh.bounds.y_max
+
+    edges = mesh.extract_all_edges()
+
+    V = np.asarray(edges.points)
+    E = np.asarray(edges.lines).reshape(-1, 3)[:, 1:]
+
+    svg = Svg(width, height, {"stroke-linecap": "round"})
+    for edge in E:
+        a, b = V[list(edge)]
         svg.moveto(a[0], a[1])
         svg.lineto(b[0], b[1])
+
+    return svg
 
 
 def main():
 
-    points = [
-        (0, 0, 0),
-        (0, 100, 0),
-        (100, 0, 0),
-        (100, 100, 0),
-        (0, 0, 100),
-        (0, 100, 100),
-        (100, 100, 100),
-    ]
-    # edges = [(0, 1), (0, 2), (1, 3), (2, 3), (0, 4), (1, 5), (4, 5), (3, 6), (5, 6)]
-    # mesh = Mesh(np.array(points), edges)
+    mesh = pv.read("models/d10.obj")
 
-    # mesh.rotate_y(45)
-    # mesh.rotate_x(45)
+    assert isinstance(mesh, pv.DataSet)
 
-    mesh = Mesh.build_regular_tetrahedron(100)
-    mesh.rotate_y(25)
-    # mesh.rotate_x(90)
-
-    mesh.translate(150, 10)
-
-    svg = Svg(400, 210, {"stroke-linecap": "round"})
-
-    render(mesh, svg)
+    svg = render(mesh)
 
     svg.write("output/image.svg")
 
