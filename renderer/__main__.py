@@ -5,13 +5,22 @@ import fire
 import os
 
 
-def render(mesh: pv.DataSet, color="#e6e6e6"):
+def render(mesh: pv.DataSet, width: float = 100, height: float = 100, color="#e6e6e6"):
     bounds = mesh.bounds
 
-    mesh = mesh.translate((-bounds.x_min, -bounds.y_min, 0))
+    actual_width = bounds.x_max - bounds.x_min
+    actual_height = bounds.y_max - bounds.y_min
 
-    width = mesh.bounds.x_max
-    height = mesh.bounds.y_max
+    scale = min(width / actual_width, height / actual_height)
+
+    mesh = mesh.scale(scale)
+
+    bounds = mesh.bounds
+
+    x_translation = (width - bounds.x_min - bounds.x_max) / 2
+    y_translation = (height - bounds.y_min - bounds.y_max) / 2
+
+    mesh = mesh.translate((x_translation, y_translation, 0))
 
     edges = mesh.extract_all_edges()
 
