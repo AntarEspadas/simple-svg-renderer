@@ -36,7 +36,7 @@ def render(mesh: pv.DataSet, width: float = 100, height: float = 100, color="#e6
     return svg
 
 
-def main(*obj_paths: str, out_dir: str | None = None):
+def main(*obj_paths: str, out_dir: str | None = None, size: int = 100):
 
     assert len(obj_paths) >= 1, "Provide at least one .obj path"
 
@@ -45,7 +45,7 @@ def main(*obj_paths: str, out_dir: str | None = None):
 
         assert isinstance(mesh, pv.DataSet)
 
-        svg = render(mesh)
+        svg = render(mesh, width=size, height=size)
 
         out_path = os.path.splitext(path)[0] + ".svg"
 
