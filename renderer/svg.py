@@ -8,11 +8,13 @@ class Svg:
         height: float,
         attributes: dict[str, str] = {},
         stroke_width: float = 3,
+        stroke_color: str = "#e6e6e6",
     ):
         self.width = width
         self.height = height
 
         self.stroke_width = stroke_width
+        self.stroke_color = stroke_color
 
         margin = stroke_width / 2
 
@@ -52,7 +54,7 @@ class Svg:
             self.rect,
             "path",
             d=d,
-            style=f"fill:none;stroke:green;stroke-width:{self.stroke_width}",
+            style=f"fill:none;stroke:{self.stroke_color};stroke-width:{self.stroke_width}",
         )
 
         tree = ET.ElementTree(self.svg)
